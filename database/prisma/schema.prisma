@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -8,4 +5,36 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+// Define Book model
+model Book {
+  id               Int         @id @default(autoincrement())
+  title            String
+  author           String
+  ISBN             String      @unique
+  availableQuantity Int
+  shelfLocation    String
+  borrowings       Borrowing[] // Relation field
+}
+
+// Define Borrower model
+model Borrower {
+  id             Int         @id @default(autoincrement())
+  name           String
+  email          String      @unique
+  registeredDate DateTime    @default(now())
+  borrowings     Borrowing[] // Relation field
+}
+
+// Define Borrowing model to track book borrowings
+model Borrowing {
+  id           Int      @id @default(autoincrement())
+  book         Book     @relation(fields: [bookId], references: [id])
+  bookId       Int
+  borrower     Borrower @relation(fields: [borrowerId], references: [id])
+  borrowerId   Int
+  checkoutDate DateTime @default(now())
+  returnDate   DateTime?
+  dueDate      DateTime
 }

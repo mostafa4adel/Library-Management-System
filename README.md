@@ -34,13 +34,26 @@ npm install
 sudo service postgresql start
 ```
 
-5. Create a `.env` file in the root of your project and add your database connection string as `DATABASE_URL`. For example:
+5. Create a `.env` file in the root of your project to select the required port:
+
+```env
+PORT=0000
+```
+
+6. Edit the .env file to reference your own PostgreSQL database. Make sure the DATABASE_URL matches the connection string of your database.:
 
 ```env
 DATABASE_URL=postgres://<username>:<password>@localhost/library-management-system
 ```
 
-6. Run the following command to start the application:
+7. Setup the database schema using Prisma. Navigate to the prisma directory and run the following command:
+
+```bash
+npx prisma db push --preview-feature
+```
+
+
+7. Run the following command to start the application:
 ```bash
 npm start
 ```
