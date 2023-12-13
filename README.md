@@ -1,7 +1,3 @@
-Sure, I can help you edit your README file for your GitHub project. A README file is a guide that gives users a detailed description of a project you have worked on. It can also be described as documentation with guidelines on how to use a project.
-
-Here is an example of a well-written README file for a GitHub project:
-
 # Library-Management-System
 
 Library Management System is a software built with Node.js and PostgreSQL to manage the operations of a library.
