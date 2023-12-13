@@ -49,7 +49,7 @@ DATABASE_URL=postgres://<username>:<password>@localhost/library-management-syste
 7. Setup the database schema using Prisma. Navigate to the prisma directory and run the following command:
 
 ```bash
-npx prisma db push --preview-feature
+npx prisma db push
 ```
 
 
