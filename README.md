@@ -72,6 +72,27 @@ npm start
 
 ![login sequence diagram](./sequence_diagram/login_sequence_diagram.png)
 
+    
+    1. The user initiates a login.
+
+    2. The backend first verifies the credentials in the cache, responding accordingly if they are available and valid.
+    
+    3. If the credentials are not found or invalid in the cache, the backend checks them in the database.
+    
+    4. Upon validating the credentials in the database, the backend either stores them in the cache if valid or sends a 404 error if the user is not found.
+
+
 2. User Request
 
 ![user request sequence diagram](./sequence_diagram/users_sequence_diagram.png)
+
+
+    1. The user initiates a CRUD request.
+    
+    2. If no token is provided, the backend rejects the request with a 401 Unauthorized response.
+    
+    3. If a token is provided, the server checks its validity. If expired, a 401 Unauthorized response is sent; otherwise, the request proceeds.
+    
+    4. The user sends a refresh token, and the server checks its validity in the cache or database. If valid, a new access token is sent; if invalid or expired, a 401 Unauthorized response is returned.
+
+    5. If the initial access token is valid, the request is processed. If the request is logical, the user has the necessary authority, and a 200 OK response is sent. In case of insufficient authority or illogical requests, a 403 Forbidden response is returned.
