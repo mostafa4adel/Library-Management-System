@@ -53,7 +53,7 @@ npx prisma db push --preview-feature
 ```
 
 
-7. Run the following command to start the application:
+8. Run the following command to start the application:
 ```bash
 npm start
 ```
