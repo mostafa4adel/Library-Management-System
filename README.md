@@ -30,7 +30,7 @@ cd Library-Management-System
 npm install
 ```
 
-4. Start the PostgreSQL service.
+4. Start the PostgreSQL service (note for linux if using windows make sure the service is running).
 ```bash
 sudo service postgresql start
 ```
@@ -43,13 +43,13 @@ JWT_SECRET=secret
 REDIS_URL=redis://localhost:6379
 ```
 
-6. Edit the .env file *IN THE DATABASE DIRECTORY* to reference your own PostgreSQL database. Make sure the DATABASE_URL matches the connection string of your database.:
+6. Modify the .env file in *IN THE DATABASE DIRECTORY* to point to your specific PostgreSQL database. Ensure that the DATABASE_URL aligns with the connection string of your database. Note that you should not create the database; simply provide the correct string, and Prisma will handle the table setup:
 
 ```env
 DATABASE_URL=postgres://<username>:<password>@localhost/library-management-system
 ```
 
-7. Setup the database schema using Prisma. Navigate to the prisma directory and run the following command:
+7. Setup the database schema using Prisma. Navigate to the database directory run the following command:
 
 ```bash
 npx prisma db push
@@ -66,9 +66,12 @@ docker-compose up -d
 npm start
 ```
 
+## User Interaction
 
+1. Login Sequence
 
+![login sequence diagram](./sequence_diagram/login_sequence_diagram.png)
 
+2. User Request
 
-
-
+![user request sequence diagram](./sequence_diagram/users_sequence_diagram.png)

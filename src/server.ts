@@ -1,4 +1,3 @@
-
 import express from 'express';
 import router from './router';
 import {NODE_PORT} from './config';

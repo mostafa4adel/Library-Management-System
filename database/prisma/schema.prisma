@@ -7,6 +7,14 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// Define Admin model
+model Admin {
+  id           Int    @id @default(autoincrement())
+  username     String @unique
+  password     String
+  refreshToken String?
+}
+
 // Define Book model
 model Book {
   id               Int         @id @default(autoincrement())
@@ -25,6 +33,7 @@ model Borrower {
   email          String      @unique
   registeredDate DateTime    @default(now())
   borrowings     Borrowing[] // Relation field
+  refreshToken   String?
 }
 
 // Define Borrowing model to track book borrowings
@@ -37,4 +46,18 @@ model Borrowing {
   checkoutDate DateTime @default(now())
   returnDate   DateTime?
   dueDate      DateTime
+}
+
+enum EventType{
+  borrow
+  return
+}
+
+// Define Log model to track borrowing events
+model Log {
+  id           Int      @id @default(autoincrement())
+  bookTitle    String   // Title of the borrowed book
+  borrowerName String   // Name of the borrower
+  eventDate    DateTime @default(now())
+  eventType    EventType   // Type of the event (e.g., "borrow", "return")
 }
