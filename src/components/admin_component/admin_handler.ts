@@ -104,7 +104,7 @@ class Admin_Handler {
             else
             {
                 // ONLY DEFAULT ADMIN CAN EDIT ADMINS
-                return Response.status(401).json({ message: "Unauthorized" });
+                return Response.status(401).json({ message: "Unauthorized Only Main Admin Can ADD Admins" });
             }
 
         }
@@ -160,7 +160,7 @@ class Admin_Handler {
             admin = await admin_model.get_admin(username);
             
             if (admin && admin.refresh_token === refresh_token) {
-                admin_cache.update_admin(username, admin.password, refresh_token);
+                admin_cache.set_admin(username, admin.password, refresh_token);
                 return await Admin_Handler.send_new_access_token(Response, username);
             }
     

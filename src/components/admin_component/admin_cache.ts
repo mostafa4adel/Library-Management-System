@@ -28,15 +28,6 @@ class Admin_Cache {
         await redis_client.set(username, JSON.stringify(admin));
     }
 
-    public async update_admin(username: string, password: string, refresh_token: string) {
-        const hashedPassword = await bcrypt.hash(password, 10);
-        const admin = {
-            password: hashedPassword,
-            refreshToken: refresh_token
-        };
-        await redis_client.set(username, JSON.stringify(admin));
-    }
-
     public  async delete_admin(username: string) {
         await redis_client.del(username);
     }

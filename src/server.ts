@@ -10,7 +10,7 @@ server.use('/api', router);
 initialize_database()
     .then(() => {
         server.listen(NODE_PORT, '0.0.0.0', () => {
-            console.log(`Server running at http://0.0.0.0:${NODE_PORT}`);
+            console.log(`Server running at  public ip:${NODE_PORT}`);
         });
     })
     .catch((error) => {
