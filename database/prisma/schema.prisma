@@ -29,7 +29,9 @@ model Book {
 // Define Borrower model
 model Borrower {
   id             Int         @id @default(autoincrement())
-  name           String
+  name           String 
+  username       String      @unique
+  password       String
   email          String      @unique
   registeredDate DateTime    @default(now())
   borrowings     Borrowing[] // Relation field
@@ -46,6 +48,10 @@ model Borrowing {
   checkoutDate DateTime @default(now())
   returnDate   DateTime?
   dueDate      DateTime
+
+  @@index([bookId], name: "bookIdIndex")
+  @@index([borrowerId], name: "borrowerIdIndex")
+  @@index([dueDate], name: "dueDateIndex")
 }
 
 enum EventType{
@@ -55,9 +61,12 @@ enum EventType{
 
 // Define Log model to track borrowing events
 model Log {
-  id           Int      @id @default(autoincrement())
-  bookTitle    String   // Title of the borrowed book
-  borrowerName String   // Name of the borrower
-  eventDate    DateTime @default(now())
+  id           Int        @id @default(autoincrement())
+  bookTitle    String   
+  borrowerName String   
+  eventDate    DateTime   @default(now())
   eventType    EventType   // Type of the event (e.g., "borrow", "return")
+
+  @@index([eventDate], name: "eventDateIndex")
+  @@index([eventType], name: "eventTypeIndex")
 }

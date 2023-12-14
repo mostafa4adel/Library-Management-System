@@ -1,24 +1,57 @@
 import jwt from 'jsonwebtoken';
-import { JWT_SECRET, JWT_REFRESH_SECRET } from '../config';
+import { USER_JWT_REFRESH_SECRET , USER_JWT_SECRET, ADMIN_JWT_REFRESH_SECRET, ADMIN_JWT_SECRET } from '../config';
 
-export const generate_tokens = (id: number) => {  
-    const accessToken = jwt.sign({ id: id.toString() }, JWT_SECRET || '', { expiresIn: '15m' });
-    const refreshToken = jwt.sign({ id: id.toString() }, JWT_REFRESH_SECRET || '', { expiresIn: '1d' });
-    return { accessToken, refreshToken };
+export const generate_access_token = (username: string, is_admin: boolean) : string  => {  
+
+    const JWT_SECRET = is_admin ? ADMIN_JWT_SECRET : USER_JWT_SECRET;
+
+    const accessToken = jwt.sign({ username: username }, JWT_SECRET || '', { expiresIn: '15m' })
+    return accessToken;
 }
 
-export const decode_token = (token: string): number => {
-    const decoded = jwt.decode(token) as { [key: string]: any };
-    return parseInt(decoded?.id);
-}
-
-export const refresh_tokens = (refreshToken: string) => {
+export const validate_access_token = (token: string, is_admin:boolean): string | null => {
     try {
-        const decoded = jwt.verify(refreshToken, JWT_REFRESH_SECRET || '') as { [key: string]: any };
-        const id = parseInt(decoded?.id);
-        return generate_tokens(id);
+        const JWT_SECRET = is_admin ? ADMIN_JWT_SECRET : USER_JWT_SECRET;
+        const decoded = jwt.verify(token, JWT_SECRET || '') as { [key: string]: any };
+        return decoded.username;
     } catch (err) {
-        console.error('Error refreshing tokens:', err);
+        if (err instanceof jwt.TokenExpiredError) {
+            console.error('Token expired:', err);
+        } else {
+            console.error('Error decoding token:', err);
+        }
+        return null;
+    }
+};
+
+export const generate_refresh_token = (username: string,is_admin:boolean) : string | null => {
+    try {
+
+        const JWT_REFRESH_SECRET = is_admin ? ADMIN_JWT_REFRESH_SECRET : USER_JWT_REFRESH_SECRET;
+        const refresh_token = jwt.sign({ username: username }, JWT_REFRESH_SECRET || '', { expiresIn: '1d' });
+        return refresh_token;
+
+    } catch (err) {
+        if (err instanceof jwt.TokenExpiredError) {
+            console.error('Refresh token expired:', err);
+        } else {
+            console.error('Error refreshing tokens:', err);
+        }
+        return null;
+    }
+};
+
+export const validate_refresh_token = (token: string,is_admin:boolean): string | null => {
+    try {
+        const JWT_REFRESH_SECRET = is_admin ? ADMIN_JWT_REFRESH_SECRET : USER_JWT_REFRESH_SECRET;
+        const decoded = jwt.verify(token, JWT_REFRESH_SECRET || '') as { [key: string]: any };
+        return decoded.username;
+    } catch (err) {
+        if (err instanceof jwt.TokenExpiredError) {
+            console.error('Refresh token expired:', err);
+        } else {
+            console.error('Error decoding token:', err);
+        }
         return null;
     }
 }
