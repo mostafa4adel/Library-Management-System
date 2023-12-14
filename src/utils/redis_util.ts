@@ -1,7 +1,8 @@
-import  { createClient  } from 'redis';
+import  { createClient } from 'redis';
+import { promisify } from 'util';
 import { REDIS_URL } from '../config';
 
-class Redis_Client{
+class Redis_Client {
     private static _instance: Redis_Client;
     private _client: any;
 
@@ -10,7 +11,6 @@ class Redis_Client{
         this._client.connect();
 
         this._client.on('connect', () => {
-
             console.log('Redis client connected');
         });
 

@@ -16,7 +16,7 @@ export const validate_access_token = (token: string, is_admin:boolean): string |
         return decoded.username;
     } catch (err) {
         if (err instanceof jwt.TokenExpiredError) {
-            console.error('Token expired:', err);
+            console.error('Token expired');
         } else {
             console.error('Error decoding token:', err);
         }

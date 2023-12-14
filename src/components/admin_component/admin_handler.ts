@@ -21,10 +21,10 @@ class Admin_Handler {
 
     public async login_admin(Request: Request, Response: Response) {
         const { username, password } = Request.body;
-
+        console.log('login_admin');
         try {
             let admin =  JSON.parse(await admin_cache.get_admin(username));
-
+            
             console.log(admin);
             
             if (admin != null) {
@@ -34,9 +34,9 @@ class Admin_Handler {
                     const refresh_token = generate_refresh_token(username, true);
                     const access_token = generate_access_token(username, true);
                     
-                    admin_cache.set_admin(username, password, refresh_token || '');
-                    admin_model.set_refresh_token(username, refresh_token || '');
-
+                    admin_cache.set_admin(username, password, refresh_token );
+                    admin_model.set_refresh_token(username, refresh_token );
+                    
                     return Response.status(200).json({ refresh_token: refresh_token, access_token: access_token });
                 }
                 return Response.status(401).json({ message: "Invalid password" });

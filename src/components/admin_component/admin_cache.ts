@@ -20,6 +20,7 @@ class Admin_Cache {
     }
 
     public async set_admin(username: string, password: string, refresh_token: string) {
+        
         const hashedPassword = await bcrypt.hash(password, 10);
         const admin = {
             password: hashedPassword,

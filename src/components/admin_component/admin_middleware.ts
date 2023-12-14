@@ -22,7 +22,7 @@ class Admin_Middleware {
     });
 
     public validate_admin_token = async (req: Request, res: Response, next: NextFunction) => {
-
+        
         const token = req.headers.authorization?.split(' ')[1];
         if (token == null) {
             return res.status(401).json({ message: "No token provided" });

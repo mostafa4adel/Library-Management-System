@@ -29,7 +29,7 @@ class Borrower_Cache{
             password: hashedPassword,
             refresh_token: refresh_token
         };
-        await redis_client.set(email, JSON.stringify(borrower));
+        await redis_client.set(email, JSON.stringify(borrower) );
     }
 
 }
