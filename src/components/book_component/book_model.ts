@@ -14,7 +14,7 @@ class Book_Model{
     }
 
     public async get_book(id: number): Promise<any | null> {
-        const book = await database_client.book.findFirst({
+        const book = await database_client.book.findUnique({
             where: {
                 id: id
             }

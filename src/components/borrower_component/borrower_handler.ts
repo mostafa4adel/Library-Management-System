@@ -62,48 +62,33 @@ class Borrower_Handler {
     public async login_borrower(req: Request, res: Response) {
         try{
             const { email, password } = req.body;
-            const borrower = await borrower_model.get_borrower(email);
-
-            if(borrower != null  ){
-                if (await bcrypt.compare(password, borrower.password)) {
-                    const access_token = generate_access_token(email,false);
-                    const refresh_token = generate_refresh_token(email,false);
-                    await borrower_cache.set_borrower(email, password, refresh_token);
-                    await borrower_model.set_refresh_token(email, refresh_token);
-                    return res.status(200).json({
-                        message: "Login successful",
-                        data: {
-                            access_token: access_token,
-                            refresh_token: refresh_token
-                        }
-                    });
-                }
-                else{
-                    return res.status(401).json({
-                        message: "Invalid credentials"
-                    });
-                }
-            }
-
-            const is_valid = await borrower_model.validate_borrower(email, password);
-
-            if(!is_valid){
-                return res.status(401).json({
-                    message: "Invalid credentials"
+            const borrower = await borrower_cache.get_borrower(email);
+            if(borrower && await bcrypt.compare(password, borrower.password)){
+                const refresh_token = generate_refresh_token(email, false);
+                const access_token = generate_access_token(email, false);
+                await borrower_cache.set_borrower(email, borrower.borrower_id, borrower.password, refresh_token);
+                await borrower_model.set_refresh_token(email, refresh_token);
+                return res.status(200).json({
+                    refresh_token: refresh_token,
+                    access_token: access_token
                 });
             }
-
-            const access_token = generate_access_token(email,false);
-            const refresh_token = generate_refresh_token(email,false);
-            await borrower_cache.set_borrower(email, password, refresh_token);
-            await borrower_model.set_refresh_token(email, refresh_token);
-
-            res.status(200).json({
-                message: "Login successful",
-                data: {
-                    access_token: access_token,
-                    refresh_token: refresh_token
+            else
+            {
+                const borrower_db = await borrower_model.get_borrower(email);
+                if(borrower_db && await bcrypt.compare(password, borrower_db.password)){
+                    const refresh_token = generate_refresh_token(email, false);
+                    const access_token = generate_access_token(email, false);
+                    await borrower_cache.set_borrower(email, borrower_db.borrower_id, borrower_db.password, refresh_token);
+                    await borrower_model.set_refresh_token(email, refresh_token);
+                    return res.status(200).json({
+                        refresh_token: refresh_token,
+                        access_token: access_token
+                    });
                 }
+            }
+            return res.status(404).json({
+                message: "Borrower not found"
             });
         }
         catch(err){
@@ -112,6 +97,7 @@ class Borrower_Handler {
                 message: "Internal Server Error"
             });
         }
+            
     }  
 
     public async logout_borrower(req: Request, res: Response) {
@@ -139,7 +125,7 @@ class Borrower_Handler {
             
             const borrower_ch = await borrower_cache.get_borrower(email);
             if(borrower_ch){
-                await borrower_cache.set_borrower(email, password, borrower_ch.refresh_token);
+                await borrower_cache.set_borrower(email, borrower_ch.borrower_id, password, borrower_ch.refresh_token);
             }
 
             res.status(200).json({
@@ -170,7 +156,7 @@ class Borrower_Handler {
 
             const borrower_db = await borrower_model.get_borrower(email);
             if(borrower_db && borrower_db.refresh_token == req.body.refresh_token){
-                borrower_cache.set_borrower(email, borrower_db.password, borrower_db.refresh_token);
+                borrower_cache.set_borrower(email, borrower_db.borrower_id,borrower_db.password, borrower_db.refresh_token);
                 return await Borrower_Handler.send_new_access_token(res, email);
             }
 
@@ -199,6 +185,19 @@ class Borrower_Handler {
                 message: "Internal Server Error"
             });
         }
+    }
+
+    public get_borrower_id = async (email: string) => {
+        const borrower = await borrower_cache.get_borrower(email);
+        if(borrower){
+            return borrower.borrower_id;
+        }
+        const borrower_db = await borrower_model.get_borrower(email);
+        if(borrower_db){
+            await borrower_cache.set_borrower(email, borrower_db.borrower_id, borrower_db.password, borrower_db.refresh_token);
+            return borrower_db.borrower_id;
+        }
+        return null;
     }
 }
 

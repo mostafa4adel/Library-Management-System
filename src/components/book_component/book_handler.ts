@@ -110,7 +110,7 @@ class Book_Handler{
         }
     }
 
-    public  async delete_book(Request:Request , Response:Response) {
+    public async delete_book(Request:Request , Response:Response) {
         try{
             const id = parseInt(Request.params.id);
         
@@ -124,7 +124,7 @@ class Book_Handler{
             return Response.status(400).json({ message: "Invalid parameter" });
         }
     }
-    
+
 }
 
 export default Book_Handler;

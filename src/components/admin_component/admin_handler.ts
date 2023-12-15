@@ -21,12 +21,9 @@ class Admin_Handler {
 
     public async login_admin(Request: Request, Response: Response) {
         const { username, password } = Request.body;
-        console.log('login_admin');
         try {
             let admin =  JSON.parse(await admin_cache.get_admin(username));
-            
-            console.log(admin);
-            
+                        
             if (admin != null) {
                 console.log("Admin found in cache");
 

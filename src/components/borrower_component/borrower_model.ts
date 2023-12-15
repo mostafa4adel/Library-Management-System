@@ -28,8 +28,7 @@ class Borrower_Model {
         });
     }
 
-    public async get_borrower(email: string): Promise<{ password: string, refresh_token: string } | null> {
-        
+    public async get_borrower(email: string): Promise<{ borrower_id:number,password: string, refresh_token: string } | null> {
         
         const borrower = await database_client.borrower.findUnique({
             where: {
@@ -39,6 +38,7 @@ class Borrower_Model {
 
         if (borrower) {
             return {
+                borrower_id: borrower.id,
                 password: borrower.password,
                 refresh_token: borrower.refreshToken || ''
             };

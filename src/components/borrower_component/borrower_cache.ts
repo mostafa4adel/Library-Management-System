@@ -23,9 +23,10 @@ class Borrower_Cache{
         await redis_client.del(email);
     }
 
-    public async set_borrower(email: string, password: string, refresh_token: string){
+    public async set_borrower(email: string, borrower_id:number ,password: string, refresh_token: string){
         const hashedPassword = await bcrypt.hash(password, 10);
         const borrower = {
+            borrower_id: borrower_id,
             password: hashedPassword,
             refresh_token: refresh_token
         };
