@@ -2,6 +2,17 @@
 
 Library Management System is a software built with Node.js and PostgreSQL to manage the operations of a library.
 
+## Table of Contents
+
+- [Prerequisites](#prerequisites)
+- [Installing Library-Management-System](#installing-library-management-system)
+- [User Interaction](#user-interaction)
+- [Database Design](#database-design)
+- [Security Measures](#security-measures)
+- [Caching](#caching)
+- [Authentication](#authentication)
+- [API Documentation](#api-documentation)
+
 ## Prerequisites
 
 Before you begin, ensure you have met the following requirements:
