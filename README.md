@@ -165,25 +165,65 @@ Authentication is handled using JWT (JSON Web Token), with four distinct secrets
    - Description: Logs in an admin.
    - Middleware: Validates admin data.
    - Handler: `admin_handler.login_admin`
+   - Request Body: 
+     - `username`: The admin's username (String, required)
+     - `password`: The admin's password (String, required)
+   - Response: A status of 200 and a JSON object containing a success message and the admin's token. Example:
+     ```json
+     {
+       "refresh_token": "fdsk",
+       "access_token" : "asda"
+     }
+     ```
 
 2. `GET /api/admin/refresh`
    - Description: Refreshes an admin's token.
    - Middleware: Validates refresh token.
    - Handler: `admin_handler.refresh_token`
+   - Request Body:
+      - `refresh_token`: The admin's valid refresh token
+   - Response: A status of 200 and a JSON object containing a success message and the new access token. Example:
+     ```json
+     {
+      "access_token" : "abcd"
+     }
+     ```
 
 3. `POST /api/admin/logout`
    - Description: Logs out an admin.
    - Handler: `admin_handler.logout_admin`
+   - Response: A status of 200 and a JSON object containing a success message. Example:
+     ```json
+     {
+       "message": "Logged out successfully"
+     }
+     ```
 
 4. `POST /api/admin/register`
-   - Description: Registers a new admin this can be invoked only by the default admin of the system.
+   - Description: Registers a new admin. This can only be invoked by the default admin of the system.
    - Middleware: Validates admin data.
    - Handler: `admin_handler.register_admin`
+   - Request Body: 
+     - `new_username`: The new admin's username (String, required)
+     - `new_password`: The new admin's password (String, required)
+   - Response: A status of 201 and a JSON object containing a success message. Example:
+     ```json
+     {
+       "message": "Admin registered successfully"
+     }
+     ```
 
 5. `DELETE /api/admin/delete`
-   - Description: Deletes an admin this can be invoked only by the default admin of the system.
+   - Description: Deletes an admin. This can only be invoked by the default admin of the system.
    - Middleware: Validates admin data.
    - Handler: `admin_handler.delete_admin`
+   - Authentication Bearer: "access_token" // a valid access token of the default admin to delete a user
+   - Response: A status of 200 and a JSON object containing a success message. Example:
+     ```json
+     {
+       "message": "Admin deleted successfully"
+     }
+     ```
 
 
 ### Borrower Endpoints:
@@ -192,25 +232,74 @@ Authentication is handled using JWT (JSON Web Token), with four distinct secrets
    - Description: Registers a new borrower.
    - Middleware: Validates borrower registration data.
    - Handler: `borrower_handler.register_borrower`
+   - Request Body: 
+     - `name`: The new borrower's username (String, required)
+     - `email`: The new borrower's email (String, required)
+     - `password`: The new borrower's password (String, required)
+   - Response: A status of 201 and a JSON object containing a success message. Example:
+     ```json
+     {
+       "message": "Borrower created successfully"
+     }
+     ```
 
 2. `POST /api/borrower/login`
    - Description: Logs in a borrower.
    - Middleware: Validates borrower login data.
    - Handler: `borrower_handler.login_borrower`
+   - Request Body: 
+     - `email`: The borrower's email (String, required)
+     - `password`: The borrower's password (String, required)
+   - Response: A status of 200 and a JSON object containing a success message and the borrower's token. Example:
+     ```json
+     {
+       "refresh_token": "dksamdks" ,
+       "access_token": "eyJhb"
+     }
+     ```
 
 3. `POST /api/borrower/refresh`
    - Description: Refreshes a borrower's token.
    - Middleware: Validates borrower refresh token and send a new access token.
    - Handler: `borrower_handler.refresh_token`
+   - Request Body:
+      - `refresh_token`: valid refresh token of the borrower
+
+   - Response: A status of 200 and a JSON object containing a success message and the new access token. Example:
+     ```json
+     {
+       "access_token": "eyJhbGciO"
+     }
+     ```
 
 4. `POST /api/borrower/logout`
    - Description: Logs out a borrower.
    - Handler: `borrower_handler.logout_borrower`
+   - Headers: 
+     - `Authorization`: Bearer token (String, required)
+   - Response: A status of 200 and a JSON object containing a success message. Example:
+     ```json
+     {
+       "message": "Logout successful"
+     }
+     ```
 
 5. `POST /api/borrower/edit`
    - Description: Edits a borrower's profile.
    - Middleware: Validates borrower edit data.
    - Handler: `borrower_handler.edit_borrower`
+   - Headers: 
+     - `Authorization`: Bearer token (String, required)
+   - Request Body: 
+     - `name`: The new name of the borrower (String, optional)
+     - `email`: The new email of the borrower (String, optional)
+     - `password`: The new password of the borrower (String, optional)
+   - Response: A status of 200 and a JSON object containing a success message. Example:
+     ```json
+     {
+       "message": "Borrower updated successfully"
+     }
+     ```
 
 Note these routes are not allowed for admin access tokens
 
@@ -221,26 +310,96 @@ Note these routes are not allowed for admin access tokens
    - Description: Searches for books based on the provided query parameters.
    - Middleware: Checks if the requester is an admin or a borrower.
    - Handler: `book_handler.get_books`
+   - Headers: 
+     - `Authorization`: Bearer token (String, required) can be from admin or borrower
+   - Response: A status of 200 and a JSON array containing the matching books. Example:
+     ```json
+     [
+       {
+         "id": 1,
+         "title": "Book Title",
+         "author": "Book Author",
+         "ISBN": "123-4567890123",
+         "available_quantity": 10,
+         "shelf_located": "A1"
+       },
+       ...
+     ]
+     ```
 
 2. `GET /api/book/:id`
    - Description: Retrieves a book by its ID.
    - Middleware: Checks if the requester is an admin or a borrower.
    - Handler: `book_handler.get_book`
+   - Headers: 
+     - `Authorization`: Bearer token (String, required)
+   - Response: A status of 200 and a JSON object containing the book's details. Example:
+     ```json
+     {
+       "id": 1,
+       "title": "Book Title",
+       "author": "Book Author",
+       "ISBN": "123-4567890123",
+       "available_quantity": 10,
+       "shelf_located": "A1"
+     }
+     ```
 
 3. `POST /api/book`
    - Description: Creates a new book.
    - Middleware: Checks if the requester is an admin.
    - Handler: `book_handler.create_book`
+   - Headers: 
+     - `Authorization`: Bearer token (String, required)
+   - Request Body: 
+     - `title`: The title of the book (String, required)
+     - `author`: The author of the book (String, required)
+     - `ISBN`: The ISBN of the book (String, required)
+     - `available_quantity`: The available quantity of the book (Number, required)
+     - `shelf_located`: The shelf location of the book (String, required)
+   - Response: A status of 201 and a JSON object containing a success message. Example:
+     ```json
+     {
+       "id": 1,
+       "title": "Book Title",
+       "author": "Book Author",
+       "ISBN": "123-4567890123",
+       "available_quantity": 10,
+       "shelf_located": "A1"
+     }
+     ```
 
 4. `PUT /api/book/:id`
    - Description: Updates a book by its ID.
    - Middleware: Checks if the requester is an admin.
    - Handler: `book_handler.update_book`
+   - Headers: 
+     - `Authorization`: Bearer token (String, required)
+   - Request Body: 
+     - `title`: The new title of the book (String, optional)
+     - `author`: The new author of the book (String, optional)
+     - `ISBN`: The new ISBN of the book (String, optional)
+     - `available_quantity`: The new available quantity of the book (Number, optional)
+     - `shelf_located`: The new shelf location of the book (String, optional)
+   - Response: A status of 200 and a JSON object containing a success message. Example:
+     ```json
+     {
+       "message": "Book updated successfully"
+     }
+     ```
 
 5. `DELETE /api/book/:id`
    - Description: Deletes a book by its ID.
    - Middleware: Checks if the requester is an admin.
    - Handler: `book_handler.delete_book`
+   - Headers: 
+     - `Authorization`: Bearer token (String, required)
+   - Response: A status of 200 and a JSON object containing a success message. Example:
+     ```json
+     {
+       "message": "Book deleted successfully"
+     }
+     ```
 
 
 ### Logs Endpoints:
@@ -248,14 +407,30 @@ Note these routes are not allowed for admin access tokens
 1. `GET /api/logs/get`
    - Description: Fetches logs based on the provided query parameters. This can be used for further analytics.
    - Middleware: Checks if the requester is an admin.
-   - Request Body: 
-     - `book_title`: Title of the book.
-     - `borrower_name`: Name of the borrower.
-     - `borrowed`: Whether the book was borrowed.
-     - `returned`: Whether the book was returned.
-     - `date_from`: Start date for the logs.
-     - `date_to`: End date for the logs.
-   - Response: A status of 200 and a JSON object containing a success message and the fetched logs.
    - Handler: `logs_model.get_logs`
-
+   - Headers: 
+     - `Authorization`: Bearer token (String, required)
+   - Query Parameters: 
+     - `book_title`: Title of the book (String, optional)
+     - `borrower_name`: Name of the borrower (String, optional)
+     - `borrowed`: Whether the book was borrowed (Boolean, optional)
+     - `returned`: Whether the book was returned (Boolean, optional)
+     - `date_from`: Start date for the logs (Date, optional)
+     - `date_to`: End date for the logs (Date, optional)
+   - Response: A status of 200 and a JSON object containing a success message and the fetched logs. Example:
+     ```json
+     {
+       "message": "Logs fetched successfully",
+       "logs": [
+         {
+           "book_title": "Book Title",
+           "borrower_name": "Borrower Name",
+           "borrowed": true,
+           "returned": false,
+           "date": "2022-01-01T00:00:00.000Z"
+         },
+         ...
+       ]
+     }
+     ```
 

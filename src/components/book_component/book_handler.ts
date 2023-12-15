@@ -78,7 +78,11 @@ class Book_Handler{
             const ISBN = Request.body.ISBN;
             const available_quantity = Request.body.available_quantity;
             const shelf_located = Request.body.shelf_located;
-        
+
+            if (!title || !author || !ISBN || !available_quantity || !shelf_located) {
+                return Response.status(400).json({ message: "Invalid parameter" });
+            }
+
             const book = await book_model.create_book(title, author, ISBN, available_quantity, shelf_located);
         
             return book;
@@ -98,7 +102,8 @@ class Book_Handler{
             const ISBN = Request.body.ISBN;
             const available_quantity = Request.body.available_quantity;
             const shelf_located = Request.body.shelf_located;
-        
+
+
             const book = await book_model.update_book(id, title, author, ISBN, available_quantity, shelf_located);
         
             return book;
